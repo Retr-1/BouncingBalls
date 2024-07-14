@@ -19,8 +19,8 @@ public:
 		return distance <= r + other.r;
 	}
 
-	void draw(Window& canvas) {
-
+	void draw(Window* canvas) {
+		canvas->DrawCircle(olc::vi2d(pos.x, pos.y), r);
 	}
 
 	static void collide(Ball& b1, Ball& b2) {
