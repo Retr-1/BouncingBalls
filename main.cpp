@@ -18,7 +18,7 @@ public:
 	}
 
 	bool is_inside(int x, int y) {
-
+		return (pos - vec2d<int>(x, y)).mag() <= r;
 	}
 
 	void draw(Window* canvas);
@@ -75,6 +75,24 @@ public:
 	{
 		// Called once per frame, draws random coloured pixels
 		Clear(olc::BLACK);
+
+		if (GetMouse(olc::Mouse::LEFT).bPressed) {
+			for (Ball& b : balls) {
+				if (b.is_inside(GetMouseX(), GetMouseY())) {
+					selected = &b;
+					break;
+				}
+			}
+		}
+
+		if (GetMouse(olc::Mouse::LEFT).bReleased) {
+			selected = nullptr;
+		}
+
+		if (selected != nullptr) {
+			selected->pos.x = GetMouseX();
+			selected->pos.y = GetMouseY();
+		}
 
 		for (Ball& b : balls) {
 			b.draw(this);
