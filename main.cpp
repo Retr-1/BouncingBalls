@@ -4,8 +4,6 @@
 
 class Window;
 
-
-
 class Ball {
 public:
 	vec2d<int> pos;
@@ -19,9 +17,11 @@ public:
 		return distance <= r + other.r;
 	}
 
-	void draw(Window* canvas) {
-		canvas->DrawCircle(olc::vi2d(pos.x, pos.y), r);
+	bool is_inside(int x, int y) {
+
 	}
+
+	void draw(Window* canvas);
 
 	static void collide(Ball& b1, Ball& b2) {
 		auto pos_diff = b2.pos - b1.pos;
@@ -30,7 +30,6 @@ public:
 		b2.v += part * -b1.mass;
 	}
 };
-
 
 
 // Override base class with your custom functionality
@@ -56,12 +55,12 @@ public:
 		b1.mass = 10;
 		b1.r = 20;
 
-		b2.pos.x = 300;
-		b2.pos.y = 400;
+		b2.pos.x = 200;
+		b2.pos.y = 500;
 		b2.mass = 100;
-		b1.r = 100;
+		b2.r = 100;
 
-		b3.pos.x = 10;
+		b3.pos.x = 500;
 		b3.pos.y = 300;
 		b3.mass = 50;
 		b3.r = 50;
@@ -75,10 +74,19 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
 		// Called once per frame, draws random coloured pixels
+		Clear(olc::BLACK);
+
+		for (Ball& b : balls) {
+			b.draw(this);
+		}
 
 		return true;
 	}
 };
+
+void Ball::draw(Window* canvas) {
+	canvas->DrawCircle(olc::vi2d(pos.x, pos.y), r);
+}
 
 int main()
 {
@@ -101,16 +109,17 @@ int main()
 	//float b = 3;
 	//std::cout << a / b;
 
-	vec2d<int> h(7, 5);
-	std::cout << (h / 3.0f).str();
+	//vec2d<int> h(7, 5);
+	//std::cout << (h / 3.0f).str();
 
 	//vec2d<std::string> c;
 	//std::cout << c.str();
 
 	//Ball b;
 
-	/*Window win;
-	if (win.Construct(256, 240, 4, 4))
-		win.Start();*/
+	Window win;
+	if (win.Construct(600, 600, 1, 1))
+		win.Start();
+
 	return 0;
 }
