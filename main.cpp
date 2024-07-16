@@ -39,8 +39,9 @@ public:
 		float mv = (target_d - d) * 0.5f;
 		vec2d<float> vec_mv = midline.normalized();
 
-		b1.pos += vec_mv * -mv;
+		b1.pos += vec_mv * (- mv);
 		b2.pos += vec_mv * mv;
+		std::cout << vec_mv.str() << '\n';
 	}
 };
 
@@ -107,8 +108,24 @@ public:
 			DrawLine(olc::vi2d(selected->pos.x, selected->pos.y), GetMousePos(), olc::BLUE);
 		}
 
-		if (GetMouse(olc::Mouse::LEFT).bReleased || GetMouse(olc::Mouse::RIGHT).bReleased) {
+		if (GetMouse(olc::Mouse::LEFT).bReleased) {
 			selected = nullptr;
+		}
+
+		if (selected && GetMouse(olc::Mouse::RIGHT).bReleased) {
+			vec2d<float> dir(selected->pos.x - GetMouseX(), selected->pos.y - GetMouseY());
+			float m = dir.mag();
+			dir.normalize();
+			selected->v = dir * 5.0f;
+			std::cout << selected->v.str();
+			selected = nullptr;
+		}
+
+		for (Ball& b : balls) {
+			b.pos += b.v * fElapsedTime;
+			b.pos.x = (b.pos.x + ScreenWidth()) % ScreenWidth();
+			b.pos.y = (b.pos.y + ScreenHeight()) % ScreenHeight();
+			//b.v -= b.v * 0.01f;
 		}
 
 		for (int i = 0; i < balls.size(); i++) {
@@ -163,7 +180,7 @@ int main()
 	//std::cout << b.str();
 
 	Window win;
-	if (win.Construct(600, 600, 1, 1))
+	if (win.Construct(800, 800, 1, 1))
 		win.Start();
 
 	return 0;

@@ -58,6 +58,12 @@ struct vec2d {
 		y /= mult;
 	}
 
+	template <typename U>
+	void operator-=(const vec2d<U>& other) {
+		x -= other.x;
+		y -= other.y;
+	}
+
 
 	//T operator*(const vec2d<float>& obj) {
 	//	return dot(obj);
