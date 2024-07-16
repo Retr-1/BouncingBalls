@@ -41,7 +41,7 @@ public:
 
 		b1.pos += vec_mv * (- mv);
 		b2.pos += vec_mv * mv;
-		std::cout << vec_mv.str() << '\n';
+		//std::cout << vec_mv.str() << '\n';
 	}
 };
 
@@ -63,7 +63,7 @@ public:
 	bool OnUserCreate() override
 	{
 		// Called once at the start, so create things here
-		Ball b1, b2, b3;
+		Ball b1, b2, b3, b4, b5;
 		b1.pos.x = 100;
 		b1.pos.y = 200;
 		b1.mass = 10;
@@ -79,9 +79,21 @@ public:
 		b3.mass = 50;
 		b3.r = 50;
 
+		b4.pos.x = 300;
+		b4.pos.y = 100;
+		b4.r = 120;
+		b4.mass = 1000;
+
+		b5.pos.x = 0;
+		b5.pos.y = 20;
+		b5.r = 90;
+		b5.mass = 700;
+
 		balls.push_back(b1);
 		balls.push_back(b2);
 		balls.push_back(b3);
+		balls.push_back(b4);
+		balls.push_back(b5);
 		return true;
 	}
 
@@ -116,7 +128,7 @@ public:
 			vec2d<float> dir(selected->pos.x - GetMouseX(), selected->pos.y - GetMouseY());
 			float m = dir.mag();
 			dir.normalize();
-			selected->v = dir * 150.0f;
+			selected->v = dir * m; // POSSIBLE OPTIMIZATION IF NOT MULTIPLIED BY CONST
 			std::cout << selected->v.str();
 			selected = nullptr;
 		}
@@ -130,7 +142,10 @@ public:
 
 		for (int i = 0; i < balls.size(); i++) {
 			for (int j = i + 1; j < balls.size(); j++) {
-				Ball::avoid_overlap(balls[i], balls[j]);
+				if (balls[i].is_intersecting(balls[j])) {
+					Ball::avoid_overlap(balls[i], balls[j]);
+					Ball::collide(balls[i], balls[j]);
+				}
 			}
 		}
 
