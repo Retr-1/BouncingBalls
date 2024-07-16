@@ -6,7 +6,7 @@ class Window;
 
 class Ball {
 public:
-	vec2d<int> pos;
+	vec2d<float> pos;
 	vec2d<float> v;
 	vec2d<float> a;
 	float mass;
@@ -31,7 +31,7 @@ public:
 	}
 
 	static void avoid_overlap(Ball& b1, Ball& b2) {
-		vec2d<int> midline = b2.pos - b1.pos;
+		vec2d<float> midline = b2.pos - b1.pos;
 		float d = midline.mag();
 		float target_d = b1.r + b2.r;
 		if (target_d <= d)
@@ -116,15 +116,15 @@ public:
 			vec2d<float> dir(selected->pos.x - GetMouseX(), selected->pos.y - GetMouseY());
 			float m = dir.mag();
 			dir.normalize();
-			selected->v = dir * 5.0f;
+			selected->v = dir * 150.0f;
 			std::cout << selected->v.str();
 			selected = nullptr;
 		}
 
 		for (Ball& b : balls) {
 			b.pos += b.v * fElapsedTime;
-			b.pos.x = (b.pos.x + ScreenWidth()) % ScreenWidth();
-			b.pos.y = (b.pos.y + ScreenHeight()) % ScreenHeight();
+			b.pos.x = fmodf(b.pos.x + ScreenWidth(), ScreenWidth());
+			b.pos.y = fmodf(b.pos.y + ScreenHeight(), ScreenHeight());
 			//b.v -= b.v * 0.01f;
 		}
 
