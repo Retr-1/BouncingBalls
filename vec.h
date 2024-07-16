@@ -10,6 +10,12 @@ struct vec2d {
 	}
 
 	template <typename U>
+	vec2d(vec2d<U>& other) {
+		x = other.x;
+		y = other.y;
+	}
+
+	template <typename U>
 	vec2d operator+(const vec2d<U>& obj) {
 		return vec2d<T>(x + obj.x, y + obj.y);
 	}
@@ -39,6 +45,18 @@ struct vec2d {
 	vec2d<T> operator*(const U& mult) {
 		return vec2d<T>(x * mult, y * mult);
 	}
+	
+	template <typename U>
+	void operator*=(const U& mult) {
+		x *= mult;
+		y *= mult;
+	}
+
+	template <typename U>
+	void operator/=(const U& mult) {
+		x /= mult;
+		y /= mult;
+	}
 
 
 	//T operator*(const vec2d<float>& obj) {
@@ -60,5 +78,16 @@ struct vec2d {
 	template <typename U>
 	T dot(const vec2d<U>& other) {
 		return x * other.x + y * other.y;
+	}
+
+	void normalize() {
+		float m = mag();
+		x /= m;
+		y /= m;
+	}
+
+	vec2d<float> normalized() {
+		float m = mag();
+		return vec2d<float>(x / m, y / m);
 	}
 };

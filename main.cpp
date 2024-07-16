@@ -12,7 +12,7 @@ public:
 	float mass;
 	float r;
 
-	bool is_touching(const Ball& other) {
+	bool is_intersecting(const Ball& other) {
 		float distance = (pos - other.pos).mag();
 		return distance <= r + other.r;
 	}
@@ -28,6 +28,19 @@ public:
 		auto part = (pos_diff * 2 * ((b2.v - b1.v) * pos_diff)) / ((b1.mass + b2.mass) * (pos_diff * pos_diff));
 		b1.v += part * b2.mass;
 		b2.v += part * -b1.mass;
+	}
+
+	static void avoid_overlap(Ball& b1, Ball& b2) {
+		vec2d<int> midline = b2.pos - b1.pos;
+		float d = midline.mag();
+		float target_d = b1.r + b2.r;
+		if (target_d <= d)
+			return;
+		float mv = (target_d - d) * 0.5f;
+		vec2d<float> vec_mv = midline.normalized();
+
+		b1.pos += vec_mv * -mv;
+		b2.pos += vec_mv * mv;
 	}
 };
 
@@ -76,7 +89,7 @@ public:
 		// Called once per frame, draws random coloured pixels
 		Clear(olc::BLACK);
 
-		if (GetMouse(olc::Mouse::LEFT).bPressed) {
+		if (GetMouse(olc::Mouse::LEFT).bPressed || GetMouse(olc::Mouse::RIGHT).bPressed) {
 			for (Ball& b : balls) {
 				if (b.is_inside(GetMouseX(), GetMouseY())) {
 					selected = &b;
@@ -85,13 +98,23 @@ public:
 			}
 		}
 
-		if (GetMouse(olc::Mouse::LEFT).bReleased) {
+		if (selected && GetMouse(olc::Mouse::LEFT).bHeld) {
+			selected->pos.x = GetMouseX();
+			selected->pos.y = GetMouseY();
+		}
+
+		if (selected && GetMouse(olc::Mouse::RIGHT).bHeld) {
+			DrawLine(olc::vi2d(selected->pos.x, selected->pos.y), GetMousePos(), olc::BLUE);
+		}
+
+		if (GetMouse(olc::Mouse::LEFT).bReleased || GetMouse(olc::Mouse::RIGHT).bReleased) {
 			selected = nullptr;
 		}
 
-		if (selected != nullptr) {
-			selected->pos.x = GetMouseX();
-			selected->pos.y = GetMouseY();
+		for (int i = 0; i < balls.size(); i++) {
+			for (int j = i + 1; j < balls.size(); j++) {
+				Ball::avoid_overlap(balls[i], balls[j]);
+			}
 		}
 
 		for (Ball& b : balls) {
@@ -134,6 +157,10 @@ int main()
 	//std::cout << c.str();
 
 	//Ball b;
+
+	//vec2d<int> a(1, 2);
+	//vec2d<float> b = a;
+	//std::cout << b.str();
 
 	Window win;
 	if (win.Construct(600, 600, 1, 1))
