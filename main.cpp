@@ -153,6 +153,14 @@ public:
 			b.draw(this);
 		}
 
+		// PRINTING TOTAL KINETIC ENERGY
+		//long double total_energy = 0;
+		//for (Ball& b : balls) {
+		//	total_energy += 0.5f * b.mass * powf(b.v.mag(), 2);
+		//	//total_energy += b.mass * b.v.mag();
+		//}
+		//std::cout << total_energy << '\n';
+
 		return true;
 	}
 };
