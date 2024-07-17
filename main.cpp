@@ -15,10 +15,12 @@ class Window;
 class Ball {
 public:
 	vec2d<float> pos;
+	vec2d<float> old_pos;
 	vec2d<float> v;
 	vec2d<float> a;
 	float mass;
 	float r;
+	float sim_time_remaining;
 
 	bool is_intersecting(const Ball& other) {
 		float distance = (pos - other.pos).mag();
@@ -27,6 +29,17 @@ public:
 
 	bool is_inside(int x, int y) {
 		return (pos - vec2d<int>(x, y)).mag() <= r;
+	}
+
+	void adjust_sim_time() {
+		float intended_speed = v.mag();
+		if (intended_speed == 0.0f) {
+			sim_time_remaining = 0;
+			return;
+		}
+		float actual_travelled = (pos - old_pos).mag();
+		float actual_time = actual_travelled / intended_speed;
+		sim_time_remaining -= actual_time;
 	}
 
 	void draw(Window* canvas);
@@ -103,7 +116,7 @@ public:
 		//balls.push_back(b4);
 		//balls.push_back(b5);
 
-		for (int i = 0; i <	1; i++) {
+		for (int i = 0; i <	20; i++) {
 			Ball b;
 			b.r = randint(10, 100);
 			b.mass = 3.14 * b.r * b.r;
@@ -151,42 +164,70 @@ public:
 			selected = nullptr;
 		}
 
-		for (Ball& b : balls) {
-			b.pos += b.v * fElapsedTime;
-				
-			if (b.v.mag() < 0.1f) {
-				b.v.x = 0;
-				b.v.y = 0;
-			}
-			else {
-				b.v -= b.v.normalized() * 50.0f * fElapsedTime;
+		const int n_epochs = 4;
+		const float f_sim_time = fElapsedTime / (float)n_epochs;
+		const int n_sim_steps = 15;
+
+		for (int e = 0; e < n_epochs; e++) {
+			for (Ball& b : balls) {
+				b.sim_time_remaining = f_sim_time;
 			}
 
-			//std::cout << b.v.str() << '\n';
+			for (int s = 0; s < n_sim_steps; s++) {
 
-			/*b.pos.x = fmodf(b.pos.x + ScreenWidth(), ScreenWidth());
-			b.pos.y = fmodf(b.pos.y + ScreenHeight(), ScreenHeight());*/
-			if (b.pos.x > ScreenWidth() + b.r) {
-				b.pos.x = -b.r;
-			}
-			else if (b.pos.x < -b.r) {
-				b.pos.x = ScreenWidth() + b.r;
-			}
+				// update ball pos
+				for (Ball& b : balls) {
+					if (b.sim_time_remaining <= 0.0f)
+						continue;
 
-			if (b.pos.y > ScreenHeight() + b.r) {
-				b.pos.y = -b.r;
-			}
-			else if (b.pos.y < -b.r) {
-				b.pos.y = ScreenHeight() + b.r;
-			}
-			//b.v -= b.v * 0.01f;
-		}
+					b.old_pos = b.pos;
+					b.pos += b.v * b.sim_time_remaining;
 
-		for (int i = 0; i < balls.size(); i++) {
-			for (int j = i + 1; j < balls.size(); j++) {
-				if (balls[i].is_intersecting(balls[j])) {
-					Ball::avoid_overlap(balls[i], balls[j]);
-					Ball::collide(balls[i], balls[j]);
+					if (b.v.mag() < 0.1f) {
+						b.v.x = 0;
+						b.v.y = 0;
+					}
+					else {
+						b.v -= b.v.normalized() * 50.0f * b.sim_time_remaining;
+					}
+
+					//std::cout << b.v.str() << '\n';
+
+					
+					if (b.pos.x > ScreenWidth() + b.r) {
+						b.pos.x = -b.r;
+					}
+					else if (b.pos.x < -b.r) {
+						b.pos.x = ScreenWidth() + b.r;
+					}
+
+					if (b.pos.y > ScreenHeight() + b.r) {
+						b.pos.y = -b.r;
+					}
+					else if (b.pos.y < -b.r) {
+						b.pos.y = ScreenHeight() + b.r;
+					}
+					
+				}
+
+				for (int i = 0; i < balls.size(); i++) {
+					for (int j = i + 1; j < balls.size(); j++) {
+						if (balls[i].is_intersecting(balls[j])) {
+							Ball::avoid_overlap(balls[i], balls[j]);
+						}
+					}
+				}
+
+				for (Ball& b : balls) {
+					b.adjust_sim_time();
+				}
+
+				for (int i = 0; i < balls.size(); i++) {
+					for (int j = i + 1; j < balls.size(); j++) {
+						if (balls[i].is_intersecting(balls[j])) {
+							Ball::collide(balls[i], balls[j]);
+						}
+					}
 				}
 			}
 		}
