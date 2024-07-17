@@ -2,6 +2,14 @@
 #include "olcPixelGameEngine.h"
 #include "vec.h"
 
+int randint(int a, int b) {
+	// returns from [a,b)
+	if (a > b)
+		std::swap(a, b);
+
+	return std::rand() % (b - a + 1) + a;
+}
+
 class Window;
 
 class Ball {
@@ -63,37 +71,47 @@ public:
 	bool OnUserCreate() override
 	{
 		// Called once at the start, so create things here
-		Ball b1, b2, b3, b4, b5;
-		b1.pos.x = 100;
-		b1.pos.y = 200;
-		b1.mass = 10;
-		b1.r = 20;
+		//Ball b1, b2, b3, b4, b5;
+		//b1.pos.x = 100;
+		//b1.pos.y = 200;
+		//b1.mass = 10;
+		//b1.r = 20;
 
-		b2.pos.x = 200;
-		b2.pos.y = 500;
-		b2.mass = 100;
-		b2.r = 100;
+		//b2.pos.x = 200;
+		//b2.pos.y = 500;
+		//b2.mass = 100;
+		//b2.r = 100;
 
-		b3.pos.x = 500;
-		b3.pos.y = 300;
-		b3.mass = 50;
-		b3.r = 50;
+		//b3.pos.x = 500;
+		//b3.pos.y = 300;
+		//b3.mass = 50;
+		//b3.r = 50;
 
-		b4.pos.x = 300;
-		b4.pos.y = 100;
-		b4.r = 120;
-		b4.mass = 1000;
+		//b4.pos.x = 300;
+		//b4.pos.y = 100;
+		//b4.r = 120;
+		//b4.mass = 1000;
 
-		b5.pos.x = 0;
-		b5.pos.y = 20;
-		b5.r = 90;
-		b5.mass = 700;
+		//b5.pos.x = 0;
+		//b5.pos.y = 20;
+		//b5.r = 90;
+		//b5.mass = 700;
 
-		balls.push_back(b1);
-		balls.push_back(b2);
-		balls.push_back(b3);
-		balls.push_back(b4);
-		balls.push_back(b5);
+		//balls.push_back(b1);
+		//balls.push_back(b2);
+		//balls.push_back(b3);
+		//balls.push_back(b4);
+		//balls.push_back(b5);
+
+		for (int i = 0; i < 20; i++) {
+			Ball b;
+			b.r = randint(10, 100);
+			b.mass = 3.14 * b.r * b.r;
+			b.pos.x = randint(0, ScreenWidth());
+			b.pos.y = randint(0, ScreenHeight());
+			balls.push_back(b);
+		}
+
 		return true;
 	}
 
@@ -135,8 +153,21 @@ public:
 
 		for (Ball& b : balls) {
 			b.pos += b.v * fElapsedTime;
-			b.pos.x = fmodf(b.pos.x + ScreenWidth(), ScreenWidth());
-			b.pos.y = fmodf(b.pos.y + ScreenHeight(), ScreenHeight());
+			/*b.pos.x = fmodf(b.pos.x + ScreenWidth(), ScreenWidth());
+			b.pos.y = fmodf(b.pos.y + ScreenHeight(), ScreenHeight());*/
+			if (b.pos.x > ScreenWidth() + b.r) {
+				b.pos.x = -b.r;
+			}
+			else if (b.pos.x < -b.r) {
+				b.pos.x = ScreenWidth() + b.r;
+			}
+
+			if (b.pos.y > ScreenHeight() + b.r) {
+				b.pos.y = -b.r;
+			}
+			else if (b.pos.y < -b.r) {
+				b.pos.y = ScreenHeight() + b.r;
+			}
 			//b.v -= b.v * 0.01f;
 		}
 
