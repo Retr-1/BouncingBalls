@@ -103,7 +103,7 @@ public:
 		//balls.push_back(b4);
 		//balls.push_back(b5);
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i <	1; i++) {
 			Ball b;
 			b.r = randint(10, 100);
 			b.mass = 3.14 * b.r * b.r;
@@ -153,6 +153,17 @@ public:
 
 		for (Ball& b : balls) {
 			b.pos += b.v * fElapsedTime;
+				
+			if (b.v.mag() < 0.1f) {
+				b.v.x = 0;
+				b.v.y = 0;
+			}
+			else {
+				b.v -= b.v.normalized() * 50.0f * fElapsedTime;
+			}
+
+			//std::cout << b.v.str() << '\n';
+
 			/*b.pos.x = fmodf(b.pos.x + ScreenWidth(), ScreenWidth());
 			b.pos.y = fmodf(b.pos.y + ScreenHeight(), ScreenHeight());*/
 			if (b.pos.x > ScreenWidth() + b.r) {
