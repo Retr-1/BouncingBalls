@@ -213,8 +213,8 @@ public:
 			vec2d<float> dir(selected->pos.x - GetMouseX(), selected->pos.y - GetMouseY());
 			float m = dir.mag();
 			dir.normalize();
-			selected->v = dir * m; // POSSIBLE OPTIMIZATION IF NOT MULTIPLIED BY CONST
-			std::cout << selected->v.str();
+			selected->v = dir * (m * 5.0f); // POSSIBLE OPTIMIZATION IF NOT MULTIPLIED BY CONST
+			//std::cout << selected->v.str();
 			selected = nullptr;
 		}
 
@@ -266,12 +266,13 @@ public:
 					b.old_pos = b.pos;
 					b.pos += b.v * b.sim_time_remaining;
 
-					if (b.v.mag() < 0.1f) {
+					if (b.v.mag() < 1.0f) {
 						b.v.x = 0;
 						b.v.y = 0;
 					}
 					else {
-						b.v -= b.v.normalized() * 50.0f * b.sim_time_remaining;
+						b.v -= b.v.normalized() * 20.0f * b.sim_time_remaining; // OLD WAY OF DRAG
+						//b.v *= 0.99f;
 					}
 
 					//std::cout << b.v.str() << '\n';
