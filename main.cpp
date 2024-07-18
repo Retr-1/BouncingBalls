@@ -64,6 +64,12 @@ public:
 		b2.pos += vec_mv * mv;
 		//std::cout << vec_mv.str() << '\n';
 	}
+
+	static bool is_inside(vec2d<float> circle, float r, int mx, int my) {
+		float d = (circle - vec2d<float>(mx, my)).mag();
+		return d <= r;
+	}
+
 };
 
 
@@ -74,6 +80,31 @@ public:
 	vec2d<float> end;
 
 	void draw(Window* canvas);
+
+	void collide(Ball& ball) {
+		auto u = end - start;
+		auto n_u = u.normalized();
+		float t = std::min(0.0f, std::max(1.0f, ball.pos.dot(n_u)));
+		auto mid = u * t + start;
+		
+		// static
+		auto v = mid - ball.pos;
+		float d = v.mag();
+		if (ball.r + r < d)
+			return;
+
+		float mv = ball.r + r - d;
+		mv *= 0.5;
+		v.normalize();
+		ball.pos -= v * mv;
+
+
+		// dynamic
+		float horizontal = -ball.v.dot(v);
+		auto n_v = v.perpendicular();
+		float vertical = ball.v.dot(n_v);
+		ball.v = v * horizontal + n_v * vertical;
+	}
 };
 
 // Override base class with your custom functionality
@@ -186,6 +217,35 @@ public:
 			selected = nullptr;
 		}
 
+
+		if (GetMouse(olc::Mouse::LEFT).bPressed) {
+			for (Capsule& c : capsules) {
+				if (Ball::is_inside(c.start, c.r, GetMouseX(), GetMouseY())) {
+					cap_selected = &c;
+					cap_start = true;
+				}
+				else if (Ball::is_inside(c.end, c.r, GetMouseX(), GetMouseY())) {
+					cap_selected = &c;
+					cap_start = false;
+				}
+			}
+		}
+
+		if (GetMouse(olc::Mouse::LEFT).bHeld && cap_selected) {
+			if (cap_start) {
+				cap_selected->start.x = GetMouseX();
+				cap_selected->start.y = GetMouseY();
+			}
+			else {
+				cap_selected->end.x = GetMouseX();
+				cap_selected->end.y = GetMouseY();
+			}
+		}
+
+		if (GetMouse(olc::Mouse::LEFT).bReleased) {
+			cap_selected = nullptr;
+		}
+
 		const int n_epochs = 4;
 		const float f_sim_time = fElapsedTime / (float)n_epochs;
 		const int n_sim_steps = 15;
@@ -237,6 +297,12 @@ public:
 						if (balls[i].is_intersecting(balls[j])) {
 							Ball::avoid_overlap(balls[i], balls[j]);
 						}
+					}
+				}
+
+				for (Ball& b : balls) {
+					for (Capsule& c : capsules) {
+						c.collide(b);
 					}
 				}
 

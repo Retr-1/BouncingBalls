@@ -96,4 +96,13 @@ struct vec2d {
 		float m = mag();
 		return vec2d<float>(x / m, y / m);
 	}
+
+	void make_perpendicular() {
+		std::swap(x, y);
+		x *= -1;
+	}
+
+	vec2d<T> perpendicular() {
+		return vec2d<T>(-y, x);
+	}
 };
