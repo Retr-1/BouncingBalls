@@ -67,12 +67,26 @@ public:
 };
 
 
+class Capsule {
+public:
+	float r;
+	vec2d<float> start;
+	vec2d<float> end;
+
+	void draw(Window* canvas);
+};
+
 // Override base class with your custom functionality
 class Window : public olc::PixelGameEngine
 {
 private:
 	std::vector<Ball> balls;
 	Ball* selected = nullptr;
+
+	std::vector<Capsule> capsules;
+	Capsule* cap_selected = nullptr;
+	bool cap_start = false;
+
 public:
 	Window()
 	{
@@ -124,6 +138,14 @@ public:
 			b.pos.y = randint(0, ScreenHeight());
 			balls.push_back(b);
 		}
+
+		Capsule c;
+		c.start.x = 100;
+		c.start.y = 100;
+		c.end.x = 300;
+		c.end.y = 300;
+		c.r = 50;
+		capsules.emplace_back(c);
 
 		return true;
 	}
@@ -236,6 +258,10 @@ public:
 			b.draw(this);
 		}
 
+		for (Capsule& c : capsules) {
+			c.draw(this);
+		}
+
 		// PRINTING TOTAL KINETIC ENERGY
 		//long double total_energy = 0;
 		//for (Ball& b : balls) {
@@ -250,6 +276,25 @@ public:
 
 void Ball::draw(Window* canvas) {
 	canvas->DrawCircle(olc::vi2d(pos.x, pos.y), r);
+}
+
+void Capsule::draw(Window* canvas) {
+	canvas->FillCircle(olc::vi2d(start.x, start.y), r, olc::DARK_GREY);
+	canvas->FillCircle(olc::vi2d(end.x, end.y), r, olc::DARK_GREY);
+
+	auto normal = end - start;
+	std::swap(normal.x, normal.y);
+	normal.x *= -1;
+	normal.normalize();
+	normal *= r;
+
+	auto line1a = start + normal;
+	auto line1b = end + normal;
+	auto line2a = start - normal;
+	auto line2b = end - normal;
+
+	canvas->DrawLine(olc::vi2d(line1a.x, line1a.y), olc::vi2d(line1b.x, line1b.y));
+	canvas->DrawLine(olc::vi2d(line2a.x, line2a.y), olc::vi2d(line2b.x, line2b.y));
 }
 
 int main()
