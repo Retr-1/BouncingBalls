@@ -34,7 +34,6 @@ public:
 	void adjust_sim_time() {
 		float intended_speed = v.mag();
 		if (intended_speed == 0.0f) {
-			sim_time_remaining = 0;
 			return;
 		}
 		float actual_travelled = (pos - old_pos).mag();
@@ -266,13 +265,15 @@ public:
 					b.old_pos = b.pos;
 					b.pos += b.v * b.sim_time_remaining;
 
-					if (b.v.mag() < 1.0f) {
+					b.a = b.v * -0.5f;
+					b.a.y += 100.0f;
+
+					b.v += b.a * b.sim_time_remaining;
+					//b.v -= b.v.normalized() * 20.0f * b.sim_time_remaining; // OLD WAY OF DRAG
+
+					if (b.v.dot(b.v) < 0.1f) {
 						b.v.x = 0;
 						b.v.y = 0;
-					}
-					else {
-						b.v -= b.v.normalized() * 20.0f * b.sim_time_remaining; // OLD WAY OF DRAG
-						//b.v *= 0.99f;
 					}
 
 					//std::cout << b.v.str() << '\n';
