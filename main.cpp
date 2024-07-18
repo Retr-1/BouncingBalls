@@ -83,8 +83,9 @@ public:
 
 	void collide(Ball& ball) {
 		auto u = end - start;
-		auto n_u = u.normalized();
-		float t = std::min(0.0f, std::max(1.0f, ball.pos.dot(n_u)));
+		auto cap_to_ball = ball.pos - start;
+		auto u_normalized = u.normalized();
+		float t = std::min(1.0f, std::max(0.0f, cap_to_ball.dot(u_normalized) / u.mag()));
 		auto mid = u * t + start;
 		
 		// static
@@ -175,7 +176,7 @@ public:
 		c.start.y = 100;
 		c.end.x = 300;
 		c.end.y = 300;
-		c.r = 50;
+		c.r = 20;
 		capsules.emplace_back(c);
 
 		return true;
