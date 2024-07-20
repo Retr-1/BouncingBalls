@@ -212,6 +212,7 @@ protected:
 	}
 
 	bool OnUserUpdate(float fElapsedTime) override {
+		Clear(olc::BLACK);
 		engine.update(fElapsedTime);
 		draw();
 		return true;
