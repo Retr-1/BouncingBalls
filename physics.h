@@ -110,7 +110,8 @@ public:
 	std::vector<Ball> balls;
 	std::vector<StaticBall> static_balls;
 	std::vector<Capsule> capsules;
-	float width, height;
+	float width = 0;
+	float height = 0;
 	
 	bool gravity = false;
 
@@ -208,6 +209,26 @@ protected:
 		engine.width = ScreenWidth();
 		engine.height = ScreenHeight();
 		return true;
+	}
+
+	bool OnUserUpdate(float fElapsedTime) override {
+		engine.update(fElapsedTime);
+		draw();
+		return true;
+	}
+
+	void draw() {
+		for (Ball& b : engine.balls) {
+			draw(b);
+		}
+
+		for (Capsule& c : engine.capsules) {
+			draw(c);
+		}
+
+		for (StaticBall& sball : engine.static_balls) {
+			draw(sball);
+		}
 	}
 
 	void draw(Capsule& cap) {
