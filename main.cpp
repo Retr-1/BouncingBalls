@@ -81,6 +81,11 @@ public:
 		c.r = 20;
 		engine.capsules.emplace_back(c);
 
+		StaticBall sball;
+		sball.r = 50;
+		sball.pos = vec2d<float>(300, 300);
+		engine.static_balls.push_back(sball);
+
 		return true;
 	}
 

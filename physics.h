@@ -111,6 +111,8 @@ public:
 	std::vector<StaticBall> static_balls;
 	std::vector<Capsule> capsules;
 	float width, height;
+	
+	bool gravity = false;
 
 	const int n_epochs = 4;
 	const int n_sim_steps = 15;
@@ -135,7 +137,8 @@ public:
 					b.pos += b.v * b.sim_time_remaining;
 
 					b.a = b.v * -0.5f;
-					b.a.y += 100.0f;
+					if (gravity)
+						b.a.y += 100.0f;
 
 					b.v += b.a * b.sim_time_remaining;
 					//b.v -= b.v.normalized() * 20.0f * b.sim_time_remaining; // OLD WAY OF DRAG
