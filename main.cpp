@@ -30,6 +30,7 @@ public:
 public:
 	bool OnUserCreate() override
 	{
+		OlcPhysicsWindow::OnUserCreate();
 		// Called once at the start, so create things here
 		//Ball b1, b2, b3, b4, b5;
 		//b1.pos.x = 100;

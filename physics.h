@@ -201,6 +201,12 @@ class OlcPhysicsWindow : public olc::PixelGameEngine {
 protected:
 	PhysicsEngine engine;
 
+	bool OnUserCreate() override {
+		engine.width = ScreenWidth();
+		engine.height = ScreenHeight();
+		return true;
+	}
+
 	void draw(Capsule& cap) {
 		FillCircle(olc::vi2d(cap.start.x, cap.start.y), cap.r, olc::DARK_GREY);
 		FillCircle(olc::vi2d(cap.end.x, cap.end.y), cap.r, olc::DARK_GREY);
