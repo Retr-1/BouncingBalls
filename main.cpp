@@ -53,8 +53,9 @@ public:
 		}
 
 		const float fall_r = r / 3;
-		for (int i = fall_r; i < 200; i+=fall_r*2+20) {
-			for (int j = fall_r; j < ScreenWidth(); j+=fall_r*2+20) {
+		const int step = 5;
+		for (int i = fall_r; i < 100; i+=fall_r*2+step) {
+			for (int j = fall_r; j < ScreenWidth(); j+=fall_r*2+step) {
 				Ball b;
 				b.r = fall_r;
 				b.mass = 10;
@@ -84,10 +85,10 @@ public:
 			cap_right.r = cap_r;
 
 			Capsule cap_down;
-			cap_down.start.y = ScreenHeight() - cap_r;
+			cap_down.start.y = ScreenHeight();
 			cap_down.start.x = x;
 			cap_down.end.x = x + pocket_width;
-			cap_down.end.y = ScreenHeight() - cap_r;
+			cap_down.end.y = ScreenHeight();
 			cap_down.r = cap_r;
 
 			engine.capsules.emplace_back(cap_left);
@@ -111,6 +112,24 @@ public:
 
 		engine.capsules.emplace_back(left);
 		engine.capsules.emplace_back(right);
+		
+		const float slide_r = 5;
+		Capsule slide_left;
+		slide_left.start.x = 0;
+		slide_left.start.y = 100;
+		slide_left.end.x = ScreenWidth()/2 - fall_r - slide_r - 5;
+		slide_left.end.y = 200;
+		slide_left.r = slide_r;
+
+		Capsule slide_right;
+		slide_right.start.x = ScreenWidth();
+		slide_right.start.y = 100;
+		slide_right.end.x = ScreenWidth()/2 + fall_r + slide_r + 5;
+		slide_right.end.y = 200;
+		slide_right.r = slide_r;
+
+		engine.capsules.emplace_back(slide_left);
+		engine.capsules.emplace_back(slide_right);
 
 
 		engine.gravity = true;
