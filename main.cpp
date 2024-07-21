@@ -33,13 +33,13 @@ public:
 		const int n_balls = 10;//(ScreenWidth() - gap) / (2*r+gap);
 		const float gap = 30;
 		const float row_gap = 20;
-		const float d = (ScreenWidth()-(n_balls-1)*gap) / n_balls;
+		const float d = (ScreenWidth()-(n_balls+1)*gap) / n_balls;
 		const float r = d / 2;
 		const int n_rows = 5;
 		
 		float y = 300;
 		for (int i = 0; i < n_rows; i++) {
-			float x = i % 2 == 0 ? r : gap/2+d;
+			float x = i % 2 == gap ? r : gap/2+d;
 			for (int j = 0; j < n_balls-i%2; j++) {
 				StaticBall sball;
 				sball.r = r;
