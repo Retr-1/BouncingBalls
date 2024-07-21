@@ -32,14 +32,15 @@ public:
 
 		const int n_balls = 10;//(ScreenWidth() - gap) / (2*r+gap);
 		const float gap = 30;
+		const float start_gap = 30;
 		const float row_gap = 20;
-		const float d = (ScreenWidth()-(n_balls+1)*gap) / n_balls;
+		const float d = (ScreenWidth()-(n_balls-1)*gap-start_gap*2) / n_balls;
 		const float r = d / 2;
 		const int n_rows = 5;
 		
 		float y = 300;
 		for (int i = 0; i < n_rows; i++) {
-			float x = i % 2 == gap ? r : gap/2+d;
+			float x = i % 2 == 0 ? start_gap+r : gap/2+d+start_gap;
 			for (int j = 0; j < n_balls-i%2; j++) {
 				StaticBall sball;
 				sball.r = r;
@@ -93,6 +94,24 @@ public:
 			engine.capsules.emplace_back(cap_right);
 			engine.capsules.emplace_back(cap_down);
 		}
+
+		Capsule left;
+		left.start.x = 0;
+		left.start.y = 0;
+		left.end.x = 0;
+		left.end.y = ScreenHeight();
+		left.r = 1;
+
+		Capsule right;
+		right.start.x = ScreenWidth();
+		right.start.y = 0;
+		right.end.x = ScreenWidth();
+		right.end.y = ScreenHeight();
+		right.r = 1;
+
+		engine.capsules.emplace_back(left);
+		engine.capsules.emplace_back(right);
+
 
 		engine.gravity = true;
 
