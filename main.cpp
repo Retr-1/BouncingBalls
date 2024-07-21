@@ -63,6 +63,37 @@ public:
 			}
 		}
 
+		const int n_pockets = 5;
+		const int pocket_width = ScreenWidth() / n_pockets;
+		const float cap_r = 10;
+		const int cap_height = 100;
+		for (int x = cap_r; x < ScreenWidth(); x += pocket_width) {
+			Capsule cap_left;
+			cap_left.start.x = x;
+			cap_left.start.y = ScreenHeight();
+			cap_left.end.x = x;
+			cap_left.end.y = ScreenHeight() - cap_height;
+			cap_left.r = cap_r;
+
+			Capsule cap_right;
+			cap_right.start.x = x + pocket_width - cap_r*2;
+			cap_right.start.y = ScreenHeight() - cap_height;
+			cap_right.end.x = x + pocket_width - cap_r*2;
+			cap_right.end.y = ScreenHeight();
+			cap_right.r = cap_r;
+
+			Capsule cap_down;
+			cap_down.start.y = ScreenHeight() - cap_r;
+			cap_down.start.x = x;
+			cap_down.end.x = x + pocket_width;
+			cap_down.end.y = ScreenHeight() - cap_r;
+			cap_down.r = cap_r;
+
+			engine.capsules.emplace_back(cap_left);
+			engine.capsules.emplace_back(cap_right);
+			engine.capsules.emplace_back(cap_down);
+		}
+
 		engine.gravity = true;
 
 		return true;
